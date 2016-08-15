@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Box2D physics</title>
+  <style type="text/css">
+    html,body {
+      background-color: #fff;
+      color: #fff;
+      font-family: helvetica, arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 12pt;
+    }
+
+    #canvas {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <script src="coquette.js"></script>
+  <script src="box2d.js"></script>
+  <script src="underscore-min.js"></script>
+  <script src="physics.js"></script>
+  <script src="maths.js"></script>
+  <script src="drawer.js"></script>
+
+  <script src="player.js"></script>
+  <script src="static-block.js"></script>
+  <script src="moveable-block.js"></script>
+  <script src="chain-block.js"></script>
+  <script src="rope.js"></script>
+
+  <script src="game.js"></script>
+  <script>
+    game = new Game('canvas', 600, 600);
+  </script>
+</body>
+</html>
