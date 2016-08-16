@@ -62,7 +62,7 @@
 
     handleJumping: function() {
       var inputter = this.game.c.inputter;
-      if (inputter.isDown(inputter.COMMA) &&
+      if (inputter.isPressed(inputter.COMMA) &&
           this.canStartJump()) {
         this.startJump();
       } else {
@@ -73,10 +73,7 @@
     handleRoping: function() {
       var inputter = this.game.c.inputter;
       if (inputter.isPressed(inputter.LEFT_MOUSE)) {
-        this.rope = game.c.entities.create(Rope, {
-          startPosition: inputter.getMousePosition(),
-          blockToAttachEndTo: this
-        });
+        this.createRope();
       }
     },
 
@@ -84,16 +81,34 @@
     startJump: function() {
 		  this.body.ApplyForce(new Physics.Vec(0, this.jumpForce()), this.body.GetPosition());
       this.jumping = true;
+      this.destroyRope();
+    },
+
+    createRope: function() {
+      var inputter = this.game.c.inputter;
+      this.destroyRope();
+      this.rope = game.c.entities.create(Rope, {
+        startPosition: inputter.getMousePosition(),
+        endBlock: this
+      });
+    },
+
+    destroyRope: function() {
+      if (this.rope) {
+        this.rope.destroy();
+        this.rope = undefined;
+      }
     },
 
     canStartJump: function() {
-      return this.body.m_linearVelocity.y >= -0.01 // stops v quick sequence jumps from
+      return (this.body.m_linearVelocity.y >= -0.01 // stops v quick sequence jumps from
                                                // bottomSensor (not needed for side
                                                // sensors because they can't be used twice in
                                                // a row
                                                // can't be 0 because moving with skewered blk
                                                // gives little bumps upwards
-        && this.hasFooting();
+              && this.hasFooting()) ||
+        this.rope;
     },
 
     hasFooting: function() {

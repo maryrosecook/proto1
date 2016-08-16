@@ -14,7 +14,8 @@
       density: 0,
       restitution: 0.2,
       friction: 0.5,
-      size: settings.size
+      size: settings.size,
+      categoryBits: 0x0001
     });
   };
 

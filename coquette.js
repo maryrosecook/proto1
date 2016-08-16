@@ -357,10 +357,13 @@
 
 ;(function(exports) {
   var Inputter = function(coquette, canvas, autoFocus) {
+    this.coquette = coquette;
     var keyboardReceiver = autoFocus === false ? canvas : window;
     connectReceiverToKeyboard(keyboardReceiver, window, autoFocus);
 
-    this._buttonListener = new ButtonListener(canvas, keyboardReceiver);
+    this._buttonListener = new ButtonListener(canvas,
+                                              keyboardReceiver,
+                                              navigator.getGamepads()[0]);
     this._mouseMoveListener = new MouseMoveListener(canvas);
   };
 
@@ -380,7 +383,19 @@
     },
 
     getMousePosition: function() {
-      return this._mouseMoveListener.getMousePosition();
+      var viewCenter = this.coquette.renderer.getViewCenter();
+      var viewSize = this.coquette.renderer.getViewSize();
+      var viewTopLeft = {
+        x: viewCenter.x - viewSize.x / 2,
+        y: viewCenter.y - viewSize.y / 2
+      };
+
+      var relativeMousePosition = this._mouseMoveListener.getMousePosition();
+
+      return {
+        x: relativeMousePosition.x + viewTopLeft.x,
+        y: relativeMousePosition.y + viewTopLeft.y
+      };
     },
 
     // Returns true if passed button currently down
@@ -479,7 +494,7 @@
     SINGLE_QUOTE: 222
   };
 
-  var ButtonListener = function(canvas, keyboardReceiver) {
+  var ButtonListener = function(canvas, keyboardReceiver, gamepad) {
     var self = this;
     this._buttonDownState = {};
     this._buttonPressedState = {};
@@ -777,16 +792,17 @@
 
       // draw background
       var viewArgs = [
-            this._viewCenter.x - this._viewSize.x / 2,
-            this._viewCenter.y - this._viewSize.y / 2,
-            this._viewSize.x,
-            this._viewSize.y 
-      ]
+        this._viewCenter.x - this._viewSize.x / 2,
+        this._viewCenter.y - this._viewSize.y / 2,
+        this._viewSize.x,
+        this._viewSize.y
+      ];
+
       if (this._backgroundColor !== undefined) {
-          ctx.fillStyle = this._backgroundColor;
-          ctx.fillRect.apply(ctx, viewArgs);
+        ctx.fillStyle = this._backgroundColor;
+        ctx.fillRect.apply(ctx, viewArgs);
       } else {
-          ctx.clearRect.apply(ctx, viewArgs);
+        ctx.clearRect.apply(ctx, viewArgs);
       }
 
       // draw game and entities
@@ -892,4 +908,3 @@
 
   exports.Entities = Entities;
 })(typeof exports === 'undefined' ? this.Coquette : exports);
-
