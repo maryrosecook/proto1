@@ -361,10 +361,13 @@
     var keyboardReceiver = autoFocus === false ? canvas : window;
     connectReceiverToKeyboard(keyboardReceiver, window, autoFocus);
 
+    var gamepad = new Gamepad(navigator);
+
     this._buttonListener = new ButtonListener(canvas,
                                               keyboardReceiver,
-                                              navigator.getGamepads()[0]);
+                                              gamepad);
     this._mouseMoveListener = new MouseMoveListener(canvas);
+    this._controllerAxesListener = new ControllerAxesListener(gamepad);
   };
 
   Inputter.prototype = {
@@ -396,6 +399,22 @@
         x: relativeMousePosition.x + viewTopLeft.x,
         y: relativeMousePosition.y + viewTopLeft.y
       };
+    },
+
+    getControllerLeftHorizontal: function() {
+      return this._controllerAxesListener.getLeftHorizontal();
+    },
+
+    getControllerLeftVertical: function() {
+      return this._controllerAxesListener.getLeftVertical();
+    },
+
+    getControllerRightHorizontal: function() {
+      return this._controllerAxesListener.getRightHorizontal();
+    },
+
+    getControllerRightVertical: function() {
+      return this._controllerAxesListener.getRightVertical();
     },
 
     // Returns true if passed button currently down
@@ -494,10 +513,45 @@
     SINGLE_QUOTE: 222
   };
 
+  var DS4_BUTTON_MAPPINGS = [
+    "CONTROLLER_X",
+    undefined,
+    undefined,
+    undefined,
+    "CONTROLLER_L1",
+    "CONTROLLER_R1"
+  ];
+
+  (function addControllerMappingConstantsToInputter(inputterPrototype) {
+    DS4_BUTTON_MAPPINGS.forEach(function(mapping) {
+      inputterPrototype[mapping] = mapping;
+    });
+  })(Inputter.prototype);
+
+  function dS4ButtonMapping(buttonIndex) {
+    return DS4_BUTTON_MAPPINGS[buttonIndex];
+  };
+
+  function Gamepad(navigator) {
+    this._navigator = navigator;
+  };
+
+  Gamepad.prototype = {
+    get: function() {
+      var gamepad = this._navigator.getGamepads()[0];
+      if (!gamepad) {
+        throw new Error("No connected gamepad");
+      }
+
+      return gamepad;
+    }
+  };
+
   var ButtonListener = function(canvas, keyboardReceiver, gamepad) {
     var self = this;
     this._buttonDownState = {};
     this._buttonPressedState = {};
+    this._gamepad = gamepad;
 
     keyboardReceiver.addEventListener('keydown', function(e) {
       self._down(e.keyCode);
@@ -518,11 +572,8 @@
 
   ButtonListener.prototype = {
     update: function() {
-      for (var i in this._buttonPressedState) {
-        if (this._buttonPressedState[i] === true) { // tick passed and press event in progress
-          this._buttonPressedState[i] = false; // end key press
-        }
-      }
+      this._unpressPressedButtons();
+      this._updateGamepadState();
     },
 
     _down: function(buttonId) {
@@ -537,6 +588,25 @@
       if (this._buttonPressedState[buttonId] === false) { // prev keypress over
         this._buttonPressedState[buttonId] = undefined; // prep for keydown to start next press
       }
+    },
+
+    _unpressPressedButtons: function() {
+      for (var i in this._buttonPressedState) {
+        if (this._buttonPressedState[i] === true) { // tick passed and press event in progress
+          this._buttonPressedState[i] = false; // end key press
+        }
+      }
+    },
+
+    _updateGamepadState: function() {
+      var self = this;
+      this._gamepad.get().buttons.forEach(function(button, i) {
+        if (button.pressed) {
+          self._down(dS4ButtonMapping(i));
+        } else {
+          self._up(dS4ButtonMapping(i));
+        }
+      });
     },
 
     isDown: function(button) {
@@ -646,6 +716,44 @@
           }
         }
       }, false);
+    }
+  };
+
+  var ControllerAxesListener = function(gamepad) {
+    this._gamepad = gamepad;
+  };
+
+  ControllerAxesListener.prototype = {
+    _axes: function() {
+      return this._gamepad.get().axes;
+    },
+
+    getLeftHorizontal: function() {
+      return this._smooth(this._axes()[0]);
+    },
+
+    getLeftVertical: function() {
+      return this._smooth(this._axes()[1]);
+    },
+
+    getRightHorizontal: function() {
+      return this._smooth(this._axes()[2]);
+    },
+
+    getRightVertical: function() {
+      return this._smooth(this._axes()[3]);
+    },
+
+    _smooth: function(axisValue) {
+      if (Maths.withinRange(axisValue, -0.1, 0.1)) {
+        return 0;
+      } else if (Maths.withinRange(axisValue, -1, -0.9)) {
+        return -1;
+      } else if (Maths.withinRange(axisValue, 0.9, 1)) {
+        return 1;
+      } else {
+        return axisValue;
+      }
     }
   };
 

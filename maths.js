@@ -136,6 +136,13 @@
       };
     },
 
+    addVectors: function(vector1, vector2) {
+      return {
+        x: vector1.x + vector2.x,
+        y: vector1.y + vector2.y
+      };
+    },
+
     // returns dot product of two passed vectors
     dotProduct: function(vector1, vector2) {
       return vector1.x * vector2.x + vector1.y * vector2.y;
@@ -152,8 +159,8 @@
       return num < 0 ? -1 : 0;
     },
 
-    withinRange: function(num, comparison, range) {
-      return num > comparison - range && num < comparison + range;
+    withinRange: function(number, start, end) {
+      return number >= start && number <= end;
     },
 
     // from: http://www.xarg.org/2010/06/is-an-angle-between-two-other-angles/

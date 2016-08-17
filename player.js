@@ -26,6 +26,14 @@
         id: "bottomSensor"
       }
     });
+
+    var self = this;
+    this.reticule = this.game.c.entities.create(Reticule, {
+      center: { x: this.center.x, y: this.center.y - 30 },
+      getPlayerCenter: function () {
+        return Maths.copyPoint(self.center);
+      }
+    });
   };
 
   exports.Player.prototype = {
@@ -45,9 +53,9 @@
       var inputter = this.game.c.inputter;
       var vec = { x: 0, y: 0 };
 
-      if (inputter.isDown(inputter.A)) {
+      if (inputter.getControllerLeftHorizontal() < -0.1) {
         vec.x = -this.SPEED;
-      } else if (inputter.isDown(inputter.E)) {
+      } else if (inputter.getControllerLeftHorizontal() > 0.1) {
         vec.x = this.SPEED
       }
 
@@ -62,7 +70,7 @@
 
     handleJumping: function() {
       var inputter = this.game.c.inputter;
-      if (inputter.isPressed(inputter.COMMA) &&
+      if (inputter.isPressed(inputter.CONTROLLER_L1) &&
           this.canStartJump()) {
         this.startJump();
       } else {
@@ -72,8 +80,8 @@
 
     handleRoping: function() {
       var inputter = this.game.c.inputter;
-      if (inputter.isPressed(inputter.LEFT_MOUSE)) {
-        this.createRope();
+      if (inputter.isPressed(inputter.CONTROLLER_R1)) {
+        this.createRope(this.reticule.getCenter());
       }
     },
 
@@ -84,11 +92,11 @@
       this.destroyRope();
     },
 
-    createRope: function() {
+    createRope: function(position) {
       var inputter = this.game.c.inputter;
       this.destroyRope();
       this.rope = game.c.entities.create(Rope, {
-        startPosition: inputter.getMousePosition(),
+        startPosition: position,
         endBlock: this
       });
     },
