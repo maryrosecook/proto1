@@ -9,6 +9,11 @@
     this.setupEntities();
   };
 
+  var WORLD_SIZE = {
+    x: 2500,
+    y: 2500
+  };
+
   Game.prototype = {
     setupEntities: function() {
       this.player = this.c.entities.create(Player, {
@@ -22,10 +27,17 @@
 
       for (var i = 0; i < 100; i++) {
         this.c.entities.create(StaticBlock, {
-          center: { x: i * 250, y: 350 },
-          size: { x: 200, y: 20 }
+          center: this.randomBlockCenter(),
+          size: { x: 200, y: 200 }
         });
       }
+    },
+
+    randomBlockCenter: function() {
+      return {
+        x: WORLD_SIZE.x * Math.random(),
+        y: WORLD_SIZE.y * Math.random(),
+      };
     },
 
     update: function(delta) {
