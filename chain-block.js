@@ -11,7 +11,7 @@
       size: settings.size
     }, {
       shape: "rectangle",
-      density: 0,
+      density: 10,
       restitution: 0.2,
       friction: 0.5,
       size: settings.size,
