@@ -5,25 +5,13 @@
     this.center = settings.center;
     this._getPlayerCenter = settings.getPlayerCenter;
     this.size = { x: 5, y: 5 };
-    this.color = "#000";
+    this.color = "#f00";
   };
 
-  var RETICULE_DISTANCE_FROM_PLAYER = 130;
+  var RETICULE_DISTANCE_FROM_PLAYER = 1000;
 
   Reticule.prototype = {
-    getCenter: function() {
-      return Maths.copyPoint(this.center);
-    },
-
     getOffScreenLineEnd: function() {
-      var offsetFromPlayer =
-          Maths.vectorMultiply(Maths.vectorTo(this._getPlayerCenter(), this.getCenter()),
-                               100);
-
-      return Maths.addVectors(this._getPlayerCenter(), offsetFromPlayer);
-    },
-
-    _calculateReticuleCenter: function() {
       return Maths.addVectors(this._getPlayerCenter(),
                               this._calculateReticuleOffsetFromPlayer());
     },
@@ -36,12 +24,11 @@
       }), RETICULE_DISTANCE_FROM_PLAYER);
     },
 
-    update: function() {
-      this.center = this._calculateReticuleCenter();
-    },
-
     draw: function() {
-      this.game.drawer.circle(this.center, this.size.x / 2, undefined, this.color);
+      this.game.drawer.line(this._getPlayerCenter(),
+                            this.getOffScreenLineEnd(),
+                            0.3,
+                            this.color);
     }
   };
 

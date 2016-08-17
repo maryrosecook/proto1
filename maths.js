@@ -163,6 +163,7 @@
       return number >= start && number <= end;
     },
 
+    // http://jsfiddle.net/justin_c_rounds/Gd2S2/
     lineLineCollisionPoint: function(line1, line2) {
       var line1StartX = line1.start.x,
           line1StartY = line1.start.y,

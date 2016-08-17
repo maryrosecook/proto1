@@ -13,22 +13,22 @@
 
   exports.Rope.prototype = {
     initialise: function(startPosition, endBlock) {
+      var angle = Maths.vectorToAngle(Maths.vectorTo(startPosition,
+                                                     endBlock.center));
+
+      var linkLength = Maths.distance(startPosition, endBlock.center) / NUMBER_OF_LINKS;
+      var xDelta = endBlock.center.x - startPosition.x;
+      var yDelta = endBlock.center.y - startPosition.y;
+
+      var xStep = xDelta / NUMBER_OF_LINKS;
+      var yStep = yDelta / NUMBER_OF_LINKS;
+
       var startBlock = this.game.c.entities.create(StaticBlock, {
         center: startPosition,
         size: { x: 10, y: 10 }
       });
 
       this.entities.push(startBlock);
-
-      var angle = Maths.vectorToAngle(Maths.vectorTo(startBlock.center,
-                                                     endBlock.center));
-
-      var linkLength = Maths.distance(startBlock.center, endBlock.center) / NUMBER_OF_LINKS;
-      var xDelta = endBlock.center.x - startBlock.center.x;
-      var yDelta = endBlock.center.y - startBlock.center.y;
-
-      var xStep = xDelta / NUMBER_OF_LINKS;
-      var yStep = yDelta / NUMBER_OF_LINKS;
 
       var previousLink = startBlock;
       for (var i = 1; i <= NUMBER_OF_LINKS; i++) {
