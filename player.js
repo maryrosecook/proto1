@@ -53,10 +53,10 @@
       var inputter = this.game.c.inputter;
       var vec = { x: 0, y: 0 };
 
-      if (inputter.getControllerLeftHorizontal() < -0.1) {
-        vec.x = -this.SPEED;
-      } else if (inputter.getControllerLeftHorizontal() > 0.1) {
-        vec.x = this.SPEED
+      if (inputter.getControllerLeftHorizontal() < 0) {
+        vec.x = this.SPEED * inputter.getControllerLeftHorizontal();
+      } else if (inputter.getControllerLeftHorizontal() > 0) {
+        vec.x = this.SPEED * inputter.getControllerLeftHorizontal()
       }
 
       var unitVec = Maths.unitVector(vec);
@@ -81,8 +81,27 @@
     handleRoping: function() {
       var inputter = this.game.c.inputter;
       if (inputter.isPressed(inputter.CONTROLLER_R1)) {
-        this.createRope(this.reticule.getCenter());
+        var self = this;
+        var ropeFastenPoint = lineRectanglesIntersectionPoints(this.ropableBlocks(), {
+          start: this.center,
+          end: this.reticule.getOffScreenLineEnd()
+        }).sort(function(point) {
+          return Maths.distance(point, self.center);
+        })[0];
+
+        if (ropeFastenPoint) {
+          this.createRope(ropeFastenPoint);
+        }
       }
+    },
+
+    ropableBlocks: function() {
+      var self = this;
+      return this.game.c.entities
+        .all(StaticBlock)
+        .filter(function(block) {
+          return this.game.c.renderer.onScreen(block)
+        });
     },
 
     jumping: false,

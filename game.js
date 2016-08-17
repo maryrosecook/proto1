@@ -34,11 +34,6 @@
         x: this.player.center.x,
         y: this.player.center.y - this.c.renderer.getViewSize().y / 4
       });
-
-      // console.log(navigator.getGamepads()[0])
-      // console.log(navigator.getGamepads()[0].axes.map(function(axis) {
-      //   return axis;
-      // }))
     },
 
     draw: function(delta) {

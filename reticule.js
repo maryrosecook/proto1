@@ -3,7 +3,7 @@
     this.game = game;
     this.zindex = 2;
     this.center = settings.center;
-    this.getPlayerCenter = settings.getPlayerCenter;
+    this._getPlayerCenter = settings.getPlayerCenter;
     this.size = { x: 5, y: 5 };
     this.color = "#000";
   };
@@ -15,21 +15,29 @@
       return Maths.copyPoint(this.center);
     },
 
-    update: function() {
-      this.center = this.calculateReticuleCenter();
+    getOffScreenLineEnd: function() {
+      var offsetFromPlayer =
+          Maths.vectorMultiply(Maths.vectorTo(this._getPlayerCenter(), this.getCenter()),
+                               100);
+
+      return Maths.addVectors(this._getPlayerCenter(), offsetFromPlayer);
     },
 
-    calculateReticuleCenter: function() {
-      return Maths.addVectors(this.getPlayerCenter(),
-                              this.calculateReticuleOffsetFromPlayer());
+    _calculateReticuleCenter: function() {
+      return Maths.addVectors(this._getPlayerCenter(),
+                              this._calculateReticuleOffsetFromPlayer());
     },
 
-    calculateReticuleOffsetFromPlayer: function() {
+    _calculateReticuleOffsetFromPlayer: function() {
       var inputter = this.game.c.inputter;
       return Maths.vectorMultiply(Maths.unitVector({
         x: inputter.getControllerRightHorizontal(),
         y: inputter.getControllerRightVertical()
       }), RETICULE_DISTANCE_FROM_PLAYER);
+    },
+
+    update: function() {
+      this.center = this._calculateReticuleCenter();
     },
 
     draw: function() {
