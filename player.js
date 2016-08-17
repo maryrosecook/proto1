@@ -85,8 +85,9 @@
         var ropeFastenPoint = lineRectanglesIntersectionPoints(this.ropableBlocks(), {
           start: this.center,
           end: this.reticule.getOffScreenLineEnd()
-        }).sort(function(point) {
-          return Maths.distance(point, self.center);
+        }).sort(function(point1, point2) {
+          return Maths.distance(point1, self.center) -
+            Maths.distance(point2, self.center);
         })[0];
 
         if (ropeFastenPoint) {
