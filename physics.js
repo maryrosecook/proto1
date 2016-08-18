@@ -111,8 +111,8 @@
       setSize: function(size, offset) {
 		    this.SetRadius(size.x / 2 * Physics.BOX_2D_SCALE);
         if (offset !== undefined) {
-          this.SetLocalPosition(new Physics.Vec(offset.x * BOX_2D_SCALE,
-                                                offset.y * BOX_2D_SCALE));
+          this.SetLocalPosition(new Physics.Vec(offset.x * Physics.BOX_2D_SCALE,
+                                                offset.y * Physics.BOX_2D_SCALE));
         }
       }
     },
