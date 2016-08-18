@@ -11,7 +11,9 @@
       size: settings.size
     }, {
       shape: "rectangle",
-      size: settings.size
+      size: settings.size,
+      restitution: 0,
+      friction: 0.2
     });
   };
 

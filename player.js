@@ -15,7 +15,8 @@
       shape: "rectangle",
       size: size,
       density: 0.4,
-      restitution: 0
+      restitution: 0,
+      friction: 0.2
     });
 
     this.game.physics.addRectangleSensor(this.body, {
