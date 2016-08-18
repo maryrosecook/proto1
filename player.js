@@ -58,7 +58,7 @@
       var unitVec = Maths.unitVector(vec);
       var speed = this.rope ? this.ROPE_SPEED : this.GROUND_SPEED;
       var pushVec = {
-        x: unitVec.x * speed,
+        x: unitVec.x * speed * Math.abs(inputter.getControllerLeftHorizontal()),
         y: unitVec.y * speed
       };
 
