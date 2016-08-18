@@ -10,8 +10,8 @@
   };
 
   var WORLD_SIZE = {
-    x: 2500,
-    y: 2500
+    x: 5000,
+    y: 5000
   };
 
   Game.prototype = {
