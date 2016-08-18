@@ -38,7 +38,8 @@
   };
 
   exports.Player.prototype = {
-    SPEED: 0.0002,
+    GROUND_SPEED: 0.0002,
+    ROPE_SPEED: 0.0004,
     SPEED_LIMIT: 0.1,
     DRAG_RATIO: 0.005,
 
@@ -52,30 +53,38 @@
 
     handleMovingHorizontally: function() {
       var inputter = this.game.c.inputter;
-      var vec = { x: 0, y: 0 };
-
-      if (inputter.getControllerLeftHorizontal() < 0) {
-        vec.x = this.SPEED * inputter.getControllerLeftHorizontal();
-      } else if (inputter.getControllerLeftHorizontal() > 0) {
-        vec.x = this.SPEED * inputter.getControllerLeftHorizontal()
-      }
+      var vec = { x: inputter.getControllerLeftHorizontal(), y: 0 };
 
       var unitVec = Maths.unitVector(vec);
+      var speed = this.rope ? this.ROPE_SPEED : this.GROUND_SPEED;
       var pushVec = {
-        x: unitVec.x * this.SPEED,
-        y: unitVec.y * this.SPEED
+        x: unitVec.x * speed,
+        y: unitVec.y * speed
       };
 
       this.body.push(pushVec);
     },
 
+    jumpState: "not-jumping",
     handleJumping: function() {
       var inputter = this.game.c.inputter;
       if (inputter.isPressed(inputter.CONTROLLER_L1) &&
-          this.canStartJump()) {
-        this.startJump();
+          (this.rope ||
+           (this.body.m_linearVelocity.y >= -0.01 &&
+            this.hasFooting()))) {
+		    this.body.ApplyForce(new Physics.Vec(0, -0.01), this.body.GetPosition());
+        this.jumpState = "jumping";
+        this.destroyRope();
+      } else if (inputter.isDown(inputter.CONTROLLER_L1)) {
+        this.body.ApplyForce(new Physics.Vec(0, -0.0001), this.body.GetPosition());
       } else if (!inputter.isDown(inputter.CONTROLLER_L1)) {
-        this.stopJump();
+        if (this.jumpState === "jumping") {
+          this.jumpState = "stopping-jumping";
+        } else if (this.jumpState === "stopping-jumping" && this.body.m_linearVelocity.y >= 0) {
+          this.jumpState = "not-jumping";
+        } else if (this.jumpState === "stopping-jumping") {
+          this.body.ApplyForce(new Physics.Vec(0, 0.0007), this.body.GetPosition());
+        }
       }
     },
 
@@ -106,13 +115,6 @@
         });
     },
 
-    jumping: false,
-    startJump: function() {
-		  this.body.ApplyForce(new Physics.Vec(0, this.jumpForce()), this.body.GetPosition());
-      this.jumping = true;
-      this.destroyRope();
-    },
-
     createRope: function(position) {
       var inputter = this.game.c.inputter;
       this.destroyRope();
@@ -127,17 +129,6 @@
         this.rope.destroy();
         this.rope = undefined;
       }
-    },
-
-    canStartJump: function() {
-      return (this.body.m_linearVelocity.y >= -0.01 // stops v quick sequence jumps from
-                                               // bottomSensor (not needed for side
-                                               // sensors because they can't be used twice in
-                                               // a row
-                                               // can't be 0 because moving with skewered blk
-                                               // gives little bumps upwards
-              && this.hasFooting()) ||
-        this.rope;
     },
 
     hasFooting: function() {
@@ -161,18 +152,6 @@
 
       return sensorFixture !== undefined &&
         this.isASensor(sensorFixture);
-    },
-
-    jumpForce: function() {
-      return -0.01;
-    },
-
-    stopJump: function() {
-      if(this.jumping === true &&
-         this.body.m_linearVelocity.y < 0) { // still going up
-        this.body.m_linearVelocity.y = 0;
-        this.jumping = false;
-      }
     },
 
     draw: function(ctx) {

@@ -28,7 +28,7 @@
       for (var i = 0; i < 100; i++) {
         this.c.entities.create(StaticBlock, {
           center: this.randomBlockCenter(),
-          size: { x: 50, y: 50 }
+          size: { x: 100, y: 25 }
         });
       }
     },
