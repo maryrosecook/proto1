@@ -68,16 +68,16 @@
     jumpState: "not-jumping",
     handleJumping: function() {
       var inputter = this.game.c.inputter;
-      if (inputter.isPressed(inputter.CONTROLLER_L1) &&
+      if (inputter.isPressed(inputter.CONTROLLER_X) &&
           (this.rope ||
            (this.body.m_linearVelocity.y >= -0.01 &&
             this.hasFooting()))) {
 		    this.body.ApplyForce(new Physics.Vec(0, -0.01), this.body.GetPosition());
         this.jumpState = "jumping";
         this.destroyRope();
-      } else if (inputter.isDown(inputter.CONTROLLER_L1)) {
+      } else if (inputter.isDown(inputter.CONTROLLER_X)) {
         this.body.ApplyForce(new Physics.Vec(0, -0.0001), this.body.GetPosition());
-      } else if (!inputter.isDown(inputter.CONTROLLER_L1)) {
+      } else if (!inputter.isDown(inputter.CONTROLLER_X)) {
         if (this.jumpState === "jumping") {
           this.jumpState = "stopping-jumping";
         } else if (this.jumpState === "stopping-jumping" && this.body.m_linearVelocity.y >= 0) {

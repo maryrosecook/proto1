@@ -19,8 +19,8 @@
     _calculateReticuleOffsetFromPlayer: function() {
       var inputter = this.game.c.inputter;
       return Maths.vectorMultiply(Maths.unitVector({
-        x: inputter.getControllerRightHorizontal(),
-        y: inputter.getControllerRightVertical()
+        x: inputter.getControllerLeftHorizontal(),
+        y: inputter.getControllerLeftVertical()
       }), RETICULE_DISTANCE_FROM_PLAYER);
     },
 
