@@ -5,7 +5,7 @@
   <style type="text/css">
     html,body {
       background-color: #fff;
-      color: #fff;
+      color: #000;
       font-family: helvetica, arial, sans-serif;
       margin: 0;
       padding: 0;
@@ -26,6 +26,10 @@
 <body>
   <canvas id="canvas"></canvas>
 
+  <p>
+    Roper alpha.  Requirements: PS4 controller, Chrome browser.  Open the dev console and check it doesn't say "No connected gamepad".  Controls: left stick to move and aim, X to jump, L1 to shoot left rope (again to detach it), R1 to shoot right rope (again to detach it)
+  </p>
+
   <script src="underscore-min.js"></script>
   <script src="coquette.js"></script>
   <script src="box2d.js"></script>
@@ -45,5 +49,6 @@
   <script>
     game = new Game('canvas', 600, 600);
   </script>
+
 </body>
 </html>
