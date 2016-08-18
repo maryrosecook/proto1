@@ -56,7 +56,7 @@
       var vec = { x: inputter.getControllerLeftHorizontal(), y: 0 };
 
       var unitVec = Maths.unitVector(vec);
-      var speed = this.rope ? this.ROPE_SPEED : this.GROUND_SPEED;
+      var speed = this.atLeastOneRope() ? this.ROPE_SPEED : this.GROUND_SPEED;
       var pushVec = {
         x: unitVec.x * speed * Math.abs(inputter.getControllerLeftHorizontal()),
         y: unitVec.y * speed
@@ -69,12 +69,13 @@
     handleJumping: function() {
       var inputter = this.game.c.inputter;
       if (inputter.isPressed(inputter.CONTROLLER_X) &&
-          (this.rope ||
+          (this.atLeastOneRope() ||
            (this.body.m_linearVelocity.y >= -0.01 &&
             this.hasFooting()))) {
 		    this.body.ApplyForce(new Physics.Vec(0, -0.01), this.body.GetPosition());
         this.jumpState = "jumping";
-        this.destroyRope();
+        this.destroyRope("left");
+        this.destroyRope("right");
       } else if (inputter.isDown(inputter.CONTROLLER_X)) {
         this.body.ApplyForce(new Physics.Vec(0, -0.0001), this.body.GetPosition());
       } else if (!inputter.isDown(inputter.CONTROLLER_X)) {
@@ -88,9 +89,19 @@
       }
     },
 
+    atLeastOneRope: function() {
+      return this.ropes["left"] || this.ropes["right"];
+    },
+
+    ropes: { left: undefined, right: undefined },
     handleRoping: function() {
       var inputter = this.game.c.inputter;
-      if (inputter.isPressed(inputter.CONTROLLER_R1)) {
+      if (this.ropes["left"] && inputter.isPressed(inputter.CONTROLLER_L1)) {
+        this.destroyRope("left");
+      } else if (this.ropes["right"] && inputter.isPressed(inputter.CONTROLLER_R1)) {
+        this.destroyRope("right");
+      } else if (inputter.isPressed(inputter.CONTROLLER_L1) ||
+          inputter.isPressed(inputter.CONTROLLER_R1)) {
         var self = this;
         var ropeFastenPoint = lineRectanglesIntersectionPoints(this.ropableBlocks(), {
           start: this.center,
@@ -101,9 +112,14 @@
         })[0];
 
         if (ropeFastenPoint) {
-          this.createRope(ropeFastenPoint);
+          this.createRope(this.ropeSide(), ropeFastenPoint);
         }
       }
+    },
+
+    ropeSide: function() {
+      var inputter = this.game.c.inputter;
+      return inputter.isPressed(inputter.CONTROLLER_L1) ? "left" : "right";
     },
 
     ropableBlocks: function() {
@@ -115,19 +131,21 @@
         });
     },
 
-    createRope: function(position) {
+    createRope: function(side, position) {
       var inputter = this.game.c.inputter;
-      this.destroyRope();
-      this.rope = game.c.entities.create(Rope, {
-        startPosition: position,
-        endBlock: this
+      this.destroyRope(side);
+      var xOffset = side === "left" ? -this.size.x / 2 : this.size.x / 2
+      this.ropes[side] = game.c.entities.create(Rope, {
+        startCenter: position,
+        endBlock: this,
+        endBlockJointCenter: { x: this.center.x + xOffset, y: this.center.y }
       });
     },
 
-    destroyRope: function() {
-      if (this.rope) {
-        this.rope.destroy();
-        this.rope = undefined;
+    destroyRope: function(side) {
+      if (this.ropes[side]) {
+        this.ropes[side].destroy();
+        this.ropes[side] = undefined;
       }
     },
 

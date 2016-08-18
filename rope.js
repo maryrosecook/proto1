@@ -6,25 +6,25 @@
     this.angle = 180;
     this.entities = [];
 
-    this.initialise(settings.startPosition, settings.endBlock);
+    this.initialise(settings.startCenter, settings.endBlock, settings.endBlockJointCenter);
   };
 
   var NUMBER_OF_LINKS = 10;
 
   exports.Rope.prototype = {
-    initialise: function(startPosition, endBlock) {
-      var angle = Maths.vectorToAngle(Maths.vectorTo(startPosition,
+    initialise: function(startCenter, endBlock, endBlockJointCenter) {
+      var angle = Maths.vectorToAngle(Maths.vectorTo(startCenter,
                                                      endBlock.center));
 
-      var linkLength = Maths.distance(startPosition, endBlock.center) / NUMBER_OF_LINKS;
-      var xDelta = endBlock.center.x - startPosition.x;
-      var yDelta = endBlock.center.y - startPosition.y;
+      var linkLength = Maths.distance(startCenter, endBlockJointCenter) / NUMBER_OF_LINKS;
+      var xDelta = endBlockJointCenter.x - startCenter.x;
+      var yDelta = endBlockJointCenter.y - startCenter.y;
 
       var xStep = xDelta / NUMBER_OF_LINKS;
       var yStep = yDelta / NUMBER_OF_LINKS;
 
       var startBlock = this.game.c.entities.create(StaticBlock, {
-        center: startPosition,
+        center: startCenter,
         size: { x: 10, y: 10 }
       });
 
@@ -46,7 +46,7 @@
 
       this.game.physics.createRevoluteJoint(previousLink,
                                             endBlock,
-                                            endBlock.center);
+                                            endBlockJointCenter);
     },
 
     update: function(delta) {
