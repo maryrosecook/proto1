@@ -40,9 +40,9 @@
     createFixture: function(shapeName, settings) {
       settings.offset = settings.offset || { x: 0, y: 0 };
 		  var fixtureDef = new Box2D.Dynamics.b2FixtureDef();
-		  fixtureDef.density = settings.density || 0.8;
-		  fixtureDef.friction = settings.friction || 0;
-		  fixtureDef.restitution = settings.restitution || 0.5;
+		  fixtureDef.density = settings.density !== undefined ? settings.density : 0.8;
+		  fixtureDef.friction = settings.friction !== undefined ? settings.friction : 0;
+		  fixtureDef.restitution = settings.restitution !== undefined ? settings.restitution : 0.5;
       fixtureDef.isSensor = settings.isSensor || false;
       fixtureDef.userData = settings.userData;
 		  fixtureDef.shape = shapes[shapeName].create(settings.size, settings.offset);
