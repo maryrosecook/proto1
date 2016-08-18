@@ -74,7 +74,7 @@
       if (inputter.isPressed(inputter.CONTROLLER_L1) &&
           this.canStartJump()) {
         this.startJump();
-      } else {
+      } else if (!inputter.isDown(inputter.CONTROLLER_L1)) {
         this.stopJump();
       }
     },
@@ -170,7 +170,7 @@
     stopJump: function() {
       if(this.jumping === true &&
          this.body.m_linearVelocity.y < 0) { // still going up
-        // this.body.m_linearVelocity.y = 0;
+        this.body.m_linearVelocity.y = 0;
         this.jumping = false;
       }
     },
