@@ -2,7 +2,7 @@
   exports.StaticBlock = function(game, settings) {
     this.game = game;
     this.zindex = 0;
-    this.color = "#000";
+    this.color = settings.color || "#000";
     this.angle = 180;
 
     this.body = game.physics.createBody(this, {

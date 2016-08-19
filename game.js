@@ -14,23 +14,36 @@
     y: 5000
   };
 
+  var PLATFORM_COUNT = 100;
+
   Game.prototype = {
     setupEntities: function() {
+      var playerStart = { x: WORLD_SIZE.x / 2, y: WORLD_SIZE.y };
+
       this.player = this.c.entities.create(Player, {
-        center: { x: 200, y: 520 }
+        center: playerStart
       });
 
+      // platform to start on
       this.c.entities.create(StaticBlock, {
-        center: { x: 250, y: 800 },
+        center: { x: playerStart.x, y: playerStart.y + 50 },
         size: { x: 200, y: 20 }
       });
 
-      for (var i = 0; i < 100; i++) {
+      // platforms
+      for (var i = 0; i < PLATFORM_COUNT; i++) {
         this.c.entities.create(StaticBlock, {
           center: this.randomBlockCenter(),
           size: { x: 100, y: 25 }
         });
       }
+
+      // goal platform
+      this.c.entities.create(StaticBlock, {
+        center: { x: WORLD_SIZE.x / 2, y: 0 },
+        size: { x: 200, y: 20 },
+        color: "#ff0"
+      });
     },
 
     randomBlockCenter: function() {
